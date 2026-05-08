@@ -1,0 +1,38 @@
+[
+    {
+        "number": 1,
+        "candidate_name": "นายเกษม ฉิมพลี",
+        "party_name": "ภูมิใจไทย",
+        "color_hex": "#212b6b"
+    },
+    {
+        "number": 2,
+        "candidate_name": "นายสมศักดิ์ บุญประชม",
+        "party_name": "เพื่อไทรวมพลัง",
+        "color_hex": "#ff66cc"
+    },
+    {
+        "number": 3,
+        "candidate_name": "นายวัชรพล เชื้อคง",
+        "party_name": "เพื่อไทย",
+        "color_hex": "#e0002b"
+    },
+    {
+        "number": 4,
+        "candidate_name": "นางสาวมิลิณ กำเนิดสิงห์",
+        "party_name": "พลังประชารัฐ",
+        "color_hex": "#1f56a3"
+    },
+    {
+        "number": 5,
+        "candidate_name": "นายสิโรตม์ แสนทวีสุข",
+        "party_name": "ประชาชน",
+        "color_hex": "#f47933"
+    },
+    {
+        "number": 6,
+        "candidate_name": "นายยิ่ง ภูผา",
+        "party_name": "ประชาธิปัตย์",
+        "color_hex": "#00a2e8"
+    }
+]

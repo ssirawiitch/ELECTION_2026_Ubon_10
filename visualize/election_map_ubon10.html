@@ -1,0 +1,4121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>pydeck</title>
+        <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.14.0/dist/maplibre-gl.css" />
+    <script src='https://cdn.jsdelivr.net/npm/@deck.gl/jupyter-widget@~9.2.*/dist/index.js'></script>
+    <link rel="stylesheet" href=https://cdn.jsdelivr.net/npm/@deck.gl/widgets@~9.2.*/dist/stylesheet.css />
+    <style>
+    body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#deck-container {
+  width: 100vw;
+  height: 100vh;
+}
+
+#deck-container canvas {
+  z-index: 1;
+  background: none;
+}
+
+#deck-container .error_text {
+  color: red;
+  background: none;
+  position: absolute;
+  z-index: 100;
+}
+    </style>
+  </head>
+  <body>
+    <div id="deck-container">
+    </div>
+  </body>
+  <script>
+    const container = document.getElementById('deck-container');
+    const jsonInput = {
+  "description": "\n<div style=\"position:fixed;top:16px;right:16px;\n            background:rgba(10,10,18,0.93);\n            border:1px solid rgba(255,255,255,0.1);\n            border-radius:14px;padding:16px 18px;z-index:999;\n            min-width:230px;\n            box-shadow:0 8px 40px rgba(0,0,0,0.7);\n            font-family:'Sarabun',sans-serif;color:#ddd\">\n  <div style=\"font-size:15px;font-weight:700;color:#fff;\n              margin-bottom:12px;padding-bottom:10px;\n              border-bottom:1px solid rgba(255,255,255,0.12)\">\n    \ud83d\uddf3\ufe0f \u0e1c\u0e25\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e15\u0e31\u0e49\u0e07 \u0e2a.\u0e2a.<br/>\n    <span style=\"font-size:11px;font-weight:400;color:#888\">\n      \u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35 \u0e40\u0e02\u0e15 10\n    </span>\n  </div>\n  <div style=\"display:flex;align-items:center;gap:8px;margin-bottom:6px\"><div style=\"width:13px;height:13px;border-radius:3px;flex-shrink:0;background:#212b6b;box-shadow:0 0 0 1px rgba(255,255,255,0.15)\"></div><div><div style=\"font-size:12px;color:#eee\">\u0e19\u0e32\u0e22\u0e40\u0e01\u0e29\u0e21 \u0e09\u0e34\u0e21\u0e1e\u0e25\u0e35</div><div style=\"font-size:10px;color:#888\">\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22</div></div></div><div style=\"display:flex;align-items:center;gap:8px;margin-bottom:6px\"><div style=\"width:13px;height:13px;border-radius:3px;flex-shrink:0;background:#ff66cc;box-shadow:0 0 0 1px rgba(255,255,255,0.15)\"></div><div><div style=\"font-size:12px;color:#eee\">\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</div><div style=\"font-size:10px;color:#888\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07</div></div></div><div style=\"display:flex;align-items:center;gap:8px;margin-bottom:6px\"><div style=\"width:13px;height:13px;border-radius:3px;flex-shrink:0;background:#e0002b;box-shadow:0 0 0 1px rgba(255,255,255,0.15)\"></div><div><div style=\"font-size:12px;color:#eee\">\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</div><div style=\"font-size:10px;color:#888\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22</div></div></div><div style=\"display:flex;align-items:center;gap:8px;margin-bottom:6px\"><div style=\"width:13px;height:13px;border-radius:3px;flex-shrink:0;background:#1f56a3;box-shadow:0 0 0 1px rgba(255,255,255,0.15)\"></div><div><div style=\"font-size:12px;color:#eee\">\u0e19\u0e32\u0e07\u0e2a\u0e32\u0e27\u0e21\u0e34\u0e25\u0e34\u0e13 \u0e01\u0e33\u0e40\u0e19\u0e34\u0e14\u0e2a\u0e34\u0e07\u0e2b\u0e4c</div><div style=\"font-size:10px;color:#888\">\u0e1e\u0e25\u0e31\u0e07\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e23\u0e31\u0e10</div></div></div><div style=\"display:flex;align-items:center;gap:8px;margin-bottom:6px\"><div style=\"width:13px;height:13px;border-radius:3px;flex-shrink:0;background:#f47933;box-shadow:0 0 0 1px rgba(255,255,255,0.15)\"></div><div><div style=\"font-size:12px;color:#eee\">\u0e19\u0e32\u0e22\u0e2a\u0e34\u0e42\u0e23\u0e15\u0e21\u0e4c \u0e41\u0e2a\u0e19\u0e17\u0e27\u0e35\u0e2a\u0e38\u0e02</div><div style=\"font-size:10px;color:#888\">\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e0a\u0e19</div></div></div><div style=\"display:flex;align-items:center;gap:8px;margin-bottom:6px\"><div style=\"width:13px;height:13px;border-radius:3px;flex-shrink:0;background:#00a2e8;box-shadow:0 0 0 1px rgba(255,255,255,0.15)\"></div><div><div style=\"font-size:12px;color:#eee\">\u0e19\u0e32\u0e22\u0e22\u0e34\u0e48\u0e07 \u0e20\u0e39\u0e1c\u0e32</div><div style=\"font-size:10px;color:#888\">\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e18\u0e34\u0e1b\u0e31\u0e15\u0e22\u0e4c</div></div></div>\n  <div style=\"margin-top:12px;padding-top:10px;\n              border-top:1px solid rgba(255,255,255,0.08);\n              font-size:10px;color:#666;line-height:1.8\">\n    \ud83c\udfa8 \u0e2a\u0e35\u0e1e\u0e37\u0e49\u0e19\u0e17\u0e35\u0e48 = \u0e1e\u0e23\u0e23\u0e04\u0e1c\u0e39\u0e49\u0e0a\u0e19\u0e30<br/>\n    \ud83d\uddb1\ufe0f hover \u0e17\u0e35\u0e48\u0e15\u0e33\u0e1a\u0e25 = \u0e14\u0e39\u0e23\u0e32\u0e22\u0e25\u0e30\u0e40\u0e2d\u0e35\u0e22\u0e14\n  </div>\n</div>\n",
+  "initialViewState": {
+    "bearing": 0,
+    "latitude": 14.88,
+    "longitude": 105.35,
+    "pitch": 0,
+    "zoom": 9.2
+  },
+  "layers": [
+    {
+      "@@type": "GeoJsonLayer",
+      "autoHighlight": true,
+      "data": {
+        "features": [
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.8787417385633,
+                      14.84363165887135
+                    ],
+                    [
+                      104.89710877253482,
+                      14.826248398765522
+                    ],
+                    [
+                      104.88590426722125,
+                      14.79713527404894
+                    ],
+                    [
+                      104.87635264345698,
+                      14.8031823934617
+                    ],
+                    [
+                      104.85647235620877,
+                      14.804620521466466
+                    ],
+                    [
+                      104.84600160840014,
+                      14.783067235392823
+                    ],
+                    [
+                      104.81791397544593,
+                      14.776436053128117
+                    ],
+                    [
+                      104.81545771387468,
+                      14.790104954583661
+                    ],
+                    [
+                      104.79851026284757,
+                      14.80261228529697
+                    ],
+                    [
+                      104.79673724480226,
+                      14.810499118284103
+                    ],
+                    [
+                      104.80796549485069,
+                      14.831640674218612
+                    ],
+                    [
+                      104.8254687179334,
+                      14.83782673464358
+                    ],
+                    [
+                      104.83929480262614,
+                      14.847027708934926
+                    ],
+                    [
+                      104.8438948737766,
+                      14.864699509852098
+                    ],
+                    [
+                      104.87776333406273,
+                      14.849134278439081
+                    ],
+                    [
+                      104.8787417385633,
+                      14.84363165887135
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "0",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e40\u0e14\u0e0a\u0e2d\u0e38\u0e14\u0e21",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e17\u0e38\u0e48\u0e07\u0e40\u0e17\u0e34\u0e07",
+              "amp_code": "3407",
+              "amp_en": "Det Udom",
+              "amp_th": "\u0e40\u0e14\u0e0a\u0e2d\u0e38\u0e14\u0e21",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e40\u0e14\u0e0a\u0e2d\u0e38\u0e14\u0e21",
+              "area_sqkm": 57.37332337451,
+              "centroid_lat": 14.819211783913326,
+              "centroid_lon": 104.84588530736171,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e17\u0e38\u0e48\u0e07\u0e40\u0e17\u0e34\u0e07",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 33.14531218257,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 2368,
+              "score_2nd": 596,
+              "tam_code": "340706",
+              "tam_en": "Thung Thoeng",
+              "tam_th": "\u0e17\u0e38\u0e48\u0e07\u0e40\u0e17\u0e34\u0e07",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e17\u0e38\u0e48\u0e07\u0e40\u0e17\u0e34\u0e07",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e17\u0e38\u0e48\u0e07\u0e40\u0e17\u0e34\u0e07 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e40\u0e14\u0e0a\u0e2d\u0e38\u0e14\u0e21</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">2,368</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(67.6%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">596</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 1,772 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 3,502 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 3502
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.98718612397903,
+                      14.523415920175218
+                    ],
+                    [
+                      104.98095774449264,
+                      14.494733509207045
+                    ],
+                    [
+                      104.9872227440915,
+                      14.483490916638338
+                    ],
+                    [
+                      104.9829447456341,
+                      14.477404876678953
+                    ],
+                    [
+                      104.99392798350995,
+                      14.462848692378195
+                    ],
+                    [
+                      104.99360604167329,
+                      14.45525798517753
+                    ],
+                    [
+                      105.00375759009242,
+                      14.455088496464931
+                    ],
+                    [
+                      105.00528254126951,
+                      14.448113167461523
+                    ],
+                    [
+                      104.9928306860749,
+                      14.433361656053908
+                    ],
+                    [
+                      104.98218876662743,
+                      14.402855195157787
+                    ],
+                    [
+                      104.9844880770799,
+                      14.384531404440404
+                    ],
+                    [
+                      104.97340261532442,
+                      14.391455639626615
+                    ],
+                    [
+                      104.96533110456042,
+                      14.388785067447797
+                    ],
+                    [
+                      104.95967915911515,
+                      14.391824483409666
+                    ],
+                    [
+                      104.95513774305755,
+                      14.381649286534754
+                    ],
+                    [
+                      104.94894850398384,
+                      14.381406192070417
+                    ],
+                    [
+                      104.92245575285746,
+                      14.401213168504892
+                    ],
+                    [
+                      104.90696520099975,
+                      14.399459213134207
+                    ],
+                    [
+                      104.90588310178563,
+                      14.41250286090185
+                    ],
+                    [
+                      104.88829861895861,
+                      14.424539519791264
+                    ],
+                    [
+                      104.89514963178857,
+                      14.42582356826655
+                    ],
+                    [
+                      104.89899838727963,
+                      14.431738722658036
+                    ],
+                    [
+                      104.8866035813393,
+                      14.438309842948152
+                    ],
+                    [
+                      104.88628073612995,
+                      14.443137262412874
+                    ],
+                    [
+                      104.89860934843098,
+                      14.463117405657824
+                    ],
+                    [
+                      104.90485205637027,
+                      14.45887012613911
+                    ],
+                    [
+                      104.90548940645087,
+                      14.473198028596487
+                    ],
+                    [
+                      104.91760450399644,
+                      14.497665218389844
+                    ],
+                    [
+                      104.90365191037962,
+                      14.502873839230704
+                    ],
+                    [
+                      104.90335513432315,
+                      14.512123757184751
+                    ],
+                    [
+                      104.91330329148865,
+                      14.513395577724197
+                    ],
+                    [
+                      104.91222122143108,
+                      14.521928417955436
+                    ],
+                    [
+                      104.91739806890831,
+                      14.528554723631611
+                    ],
+                    [
+                      104.95042026256124,
+                      14.53092183695283
+                    ],
+                    [
+                      104.95418425649034,
+                      14.534947336436943
+                    ],
+                    [
+                      104.95400648293736,
+                      14.552731094199908
+                    ],
+                    [
+                      104.97247997524148,
+                      14.540569852099278
+                    ],
+                    [
+                      104.98718612397903,
+                      14.523415920175218
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "1",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e0b\u0e07",
+              "amp_code": "3409",
+              "amp_en": "Nam Yuen",
+              "amp_th": "\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "area_sqkm": 144.52563278024,
+              "centroid_lat": 14.460218789992286,
+              "centroid_lon": 104.94697515933288,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e42\u0e0b\u0e07",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 60.07925928316,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 3522,
+              "score_2nd": 136,
+              "tam_code": "340901",
+              "tam_en": "Song",
+              "tam_th": "\u0e42\u0e0b\u0e07",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e0b\u0e07",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e42\u0e0b\u0e07 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">3,522</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(90.8%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">136</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 3,386 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 3,879 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 3879
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      105.03234813280439,
+                      14.675206822335701
+                    ],
+                    [
+                      105.04540081974349,
+                      14.66580590338361
+                    ],
+                    [
+                      105.05450600870101,
+                      14.646759258141698
+                    ],
+                    [
+                      105.07066456400881,
+                      14.649288934576193
+                    ],
+                    [
+                      105.09060989147426,
+                      14.623219552036884
+                    ],
+                    [
+                      105.09601900114683,
+                      14.624738620380196
+                    ],
+                    [
+                      105.10666899864003,
+                      14.617752987695356
+                    ],
+                    [
+                      105.12304942965767,
+                      14.621934601840584
+                    ],
+                    [
+                      105.11999850095201,
+                      14.611263316304317
+                    ],
+                    [
+                      105.1103059560042,
+                      14.605058938641784
+                    ],
+                    [
+                      105.09895632080726,
+                      14.603265274798666
+                    ],
+                    [
+                      105.09683471549457,
+                      14.60785185802576
+                    ],
+                    [
+                      105.07533930034269,
+                      14.599147844876416
+                    ],
+                    [
+                      105.05173955940778,
+                      14.601173494338315
+                    ],
+                    [
+                      105.04665587180884,
+                      14.60627792060626
+                    ],
+                    [
+                      105.0345319267233,
+                      14.599217212507734
+                    ],
+                    [
+                      105.02767788030579,
+                      14.605700065410355
+                    ],
+                    [
+                      105.02893519694011,
+                      14.610243888492674
+                    ],
+                    [
+                      105.0247468397409,
+                      14.610063448650616
+                    ],
+                    [
+                      105.01999096239666,
+                      14.6061050692416
+                    ],
+                    [
+                      105.02017179603511,
+                      14.594197462530188
+                    ],
+                    [
+                      105.01710482572615,
+                      14.59946741952832
+                    ],
+                    [
+                      105.00240388442045,
+                      14.603654589714436
+                    ],
+                    [
+                      104.99572690950103,
+                      14.584875688093424
+                    ],
+                    [
+                      104.99000720379208,
+                      14.591582627060081
+                    ],
+                    [
+                      104.98469939663184,
+                      14.587681220929177
+                    ],
+                    [
+                      104.9768883219445,
+                      14.590410483255276
+                    ],
+                    [
+                      104.97212504590507,
+                      14.597363731177328
+                    ],
+                    [
+                      104.97670107221273,
+                      14.617166408524845
+                    ],
+                    [
+                      104.9827877074307,
+                      14.622193899743829
+                    ],
+                    [
+                      104.98043406298703,
+                      14.634544009861491
+                    ],
+                    [
+                      104.97863663276681,
+                      14.648994468877564
+                    ],
+                    [
+                      104.99501578835032,
+                      14.66836183892047
+                    ],
+                    [
+                      105.00932027372458,
+                      14.668234039823304
+                    ],
+                    [
+                      105.01471485608097,
+                      14.66246808365165
+                    ],
+                    [
+                      105.02521324395657,
+                      14.674679583890331
+                    ],
+                    [
+                      105.03234813280439,
+                      14.675206822335701
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "2",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e22\u0e32\u0e07",
+              "amp_code": "3409",
+              "amp_en": "Nam Yuen",
+              "amp_th": "\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "area_sqkm": 83.72263360748,
+              "centroid_lat": 14.628538308351215,
+              "centroid_lon": 105.03225511591806,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#f47933",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                244,
+                121,
+                51
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e22\u0e32\u0e07",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e2a\u0e34\u0e42\u0e23\u0e15\u0e21\u0e4c \u0e41\u0e2a\u0e19\u0e17\u0e27\u0e35\u0e2a\u0e38\u0e02",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e0a\u0e19",
+              "perimeter": 50.71992991448,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 2795,
+              "score_2nd": 124,
+              "tam_code": "340903",
+              "tam_en": "Yang",
+              "tam_th": "\u0e22\u0e32\u0e07",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e22\u0e32\u0e07",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e22\u0e32\u0e07 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">2,795</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(90.3%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#f47933;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e2a\u0e34\u0e42\u0e23\u0e15\u0e21\u0e4c \u0e41\u0e2a\u0e19\u0e17\u0e27\u0e35\u0e2a\u0e38\u0e02</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e0a\u0e19 &nbsp;<b style=\"color:#fff\">124</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 2,671 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 3,096 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 3096
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      105.14809353674603,
+                      14.511890785339324
+                    ],
+                    [
+                      105.13952388174052,
+                      14.508662625204503
+                    ],
+                    [
+                      105.13897546341121,
+                      14.504608575157642
+                    ],
+                    [
+                      105.16186168587406,
+                      14.485028218230354
+                    ],
+                    [
+                      105.18560745554242,
+                      14.460902008131423
+                    ],
+                    [
+                      105.18805518227157,
+                      14.451107929216771
+                    ],
+                    [
+                      105.19388339036456,
+                      14.4496588826068
+                    ],
+                    [
+                      105.19210676363934,
+                      14.444684179889856
+                    ],
+                    [
+                      105.19770283520303,
+                      14.431938851056113
+                    ],
+                    [
+                      105.20405811075204,
+                      14.432082594206397
+                    ],
+                    [
+                      105.21539817796994,
+                      14.41799940789447
+                    ],
+                    [
+                      105.24021992050186,
+                      14.420175372308188
+                    ],
+                    [
+                      105.2607582334897,
+                      14.393612657489932
+                    ],
+                    [
+                      105.27184069001463,
+                      14.388735366369941
+                    ],
+                    [
+                      105.28434598051271,
+                      14.365898499164516
+                    ],
+                    [
+                      105.28010096200516,
+                      14.353705663195145
+                    ],
+                    [
+                      105.26649501040214,
+                      14.36098696399163
+                    ],
+                    [
+                      105.25132542549113,
+                      14.361904166756425
+                    ],
+                    [
+                      105.2417015360152,
+                      14.35050881763521
+                    ],
+                    [
+                      105.23574108370076,
+                      14.349824147470672
+                    ],
+                    [
+                      105.23347395326141,
+                      14.336697939398775
+                    ],
+                    [
+                      105.22733948044088,
+                      14.333466381025099
+                    ],
+                    [
+                      105.2162990959999,
+                      14.335262409291074
+                    ],
+                    [
+                      105.21094410566806,
+                      14.342204430416427
+                    ],
+                    [
+                      105.1972800650764,
+                      14.347793820766345
+                    ],
+                    [
+                      105.18491752422645,
+                      14.341376946513574
+                    ],
+                    [
+                      105.1746276212245,
+                      14.344306415897849
+                    ],
+                    [
+                      105.16650513557988,
+                      14.328685170600968
+                    ],
+                    [
+                      105.17754737919887,
+                      14.315664028591971
+                    ],
+                    [
+                      105.17019319909838,
+                      14.303192374904688
+                    ],
+                    [
+                      105.1609617211294,
+                      14.301015029726583
+                    ],
+                    [
+                      105.15985188926462,
+                      14.2881249647939
+                    ],
+                    [
+                      105.1513735718281,
+                      14.285424768682741
+                    ],
+                    [
+                      105.1537204346399,
+                      14.269156894317508
+                    ],
+                    [
+                      105.14312132259607,
+                      14.261363131790176
+                    ],
+                    [
+                      105.1543229827321,
+                      14.25741530792153
+                    ],
+                    [
+                      105.14934791381296,
+                      14.245958604200242
+                    ],
+                    [
+                      105.13214615210737,
+                      14.228731128813317
+                    ],
+                    [
+                      105.11458801908164,
+                      14.22092860017727
+                    ],
+                    [
+                      105.10912499738413,
+                      14.212246658936483
+                    ],
+                    [
+                      105.09431113719694,
+                      14.214407266099252
+                    ],
+                    [
+                      105.08313207622409,
+                      14.209023786277777
+                    ],
+                    [
+                      105.04981285525307,
+                      14.215019293018013
+                    ],
+                    [
+                      105.02099096541295,
+                      14.243383530284161
+                    ],
+                    [
+                      105.022407804226,
+                      14.256755373531254
+                    ],
+                    [
+                      105.0158272263197,
+                      14.27635054084417
+                    ],
+                    [
+                      105.00530272099819,
+                      14.289883401076274
+                    ],
+                    [
+                      105.00149106692268,
+                      14.304837859250622
+                    ],
+                    [
+                      104.98425180375925,
+                      14.318914129363508
+                    ],
+                    [
+                      104.99234895093494,
+                      14.325255467750463
+                    ],
+                    [
+                      105.00042082882167,
+                      14.36733607644252
+                    ],
+                    [
+                      105.0053187950166,
+                      14.387754978614872
+                    ],
+                    [
+                      105.01311100111832,
+                      14.399445852678987
+                    ],
+                    [
+                      105.00959772725112,
+                      14.419597485099619
+                    ],
+                    [
+                      105.01587256854715,
+                      14.438374118057215
+                    ],
+                    [
+                      105.02954929686547,
+                      14.442624668421708
+                    ],
+                    [
+                      105.03286063285825,
+                      14.448434171309117
+                    ],
+                    [
+                      105.05450643482591,
+                      14.44878794926074
+                    ],
+                    [
+                      105.0756041094768,
+                      14.478570499175122
+                    ],
+                    [
+                      105.09903045662169,
+                      14.494212044141216
+                    ],
+                    [
+                      105.09794079074804,
+                      14.503712749592017
+                    ],
+                    [
+                      105.10378575507006,
+                      14.517255302672876
+                    ],
+                    [
+                      105.11509367006786,
+                      14.522651075933434
+                    ],
+                    [
+                      105.12484884704453,
+                      14.519378465627781
+                    ],
+                    [
+                      105.14094388202952,
+                      14.524059081945307
+                    ],
+                    [
+                      105.14920086180013,
+                      14.5222316473793
+                    ],
+                    [
+                      105.14809353674603,
+                      14.511890785339324
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "3",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e14\u0e21\u0e1b\u0e23\u0e30\u0e14\u0e34\u0e29\u0e10\u0e4c",
+              "amp_code": "3409",
+              "amp_en": "Nam Yuen",
+              "amp_th": "\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "area_sqkm": 586.61533070675,
+              "centroid_lat": 14.362610542253837,
+              "centroid_lon": 105.11099656674864,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e42\u0e14\u0e21\u0e1b\u0e23\u0e30\u0e14\u0e34\u0e29\u0e10\u0e4c",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 117.48353748054,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 6654,
+              "score_2nd": 272,
+              "tam_code": "340904",
+              "tam_en": "Dom Pradit",
+              "tam_th": "\u0e42\u0e14\u0e21\u0e1b\u0e23\u0e30\u0e14\u0e34\u0e29\u0e10\u0e4c",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e14\u0e21\u0e1b\u0e23\u0e30\u0e14\u0e34\u0e29\u0e10\u0e4c",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e42\u0e14\u0e21\u0e1b\u0e23\u0e30\u0e14\u0e34\u0e29\u0e10\u0e4c &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">6,654</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(92.0%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">272</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 6,382 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 7,231 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 7231
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      105.07398092397257,
+                      14.550838048352123
+                    ],
+                    [
+                      105.08424349017658,
+                      14.55094283802246
+                    ],
+                    [
+                      105.09638819515372,
+                      14.5414604076011
+                    ],
+                    [
+                      105.12528275022323,
+                      14.546058880863619
+                    ],
+                    [
+                      105.13901724794968,
+                      14.535809033884034
+                    ],
+                    [
+                      105.15078457888353,
+                      14.534544627994928
+                    ],
+                    [
+                      105.15727692882986,
+                      14.528819754205006
+                    ],
+                    [
+                      105.14773690172636,
+                      14.525967479034959
+                    ],
+                    [
+                      105.14920086180013,
+                      14.5222316473793
+                    ],
+                    [
+                      105.14094388202952,
+                      14.524059081945307
+                    ],
+                    [
+                      105.12484884704453,
+                      14.519378465627781
+                    ],
+                    [
+                      105.11509367006786,
+                      14.522651075933434
+                    ],
+                    [
+                      105.10378575507006,
+                      14.517255302672876
+                    ],
+                    [
+                      105.09794079074804,
+                      14.503712749592017
+                    ],
+                    [
+                      105.0868622855393,
+                      14.512828225304718
+                    ],
+                    [
+                      105.07265272645736,
+                      14.512103447635639
+                    ],
+                    [
+                      105.06137612381531,
+                      14.519654491366841
+                    ],
+                    [
+                      105.0463471502752,
+                      14.512535455630509
+                    ],
+                    [
+                      105.032857967416,
+                      14.52376868464899
+                    ],
+                    [
+                      105.02110037544107,
+                      14.511527956064857
+                    ],
+                    [
+                      105.02380857368156,
+                      14.50492475138878
+                    ],
+                    [
+                      105.01824124292376,
+                      14.509291370507839
+                    ],
+                    [
+                      105.01396247682648,
+                      14.50710922668036
+                    ],
+                    [
+                      105.01526734473508,
+                      14.514660849205487
+                    ],
+                    [
+                      105.0105285888534,
+                      14.518218789607767
+                    ],
+                    [
+                      105.00590106338322,
+                      14.51569907463754
+                    ],
+                    [
+                      105.00709102175207,
+                      14.51905398310463
+                    ],
+                    [
+                      105.0006359888837,
+                      14.518802497645112
+                    ],
+                    [
+                      105.00254482759131,
+                      14.521887048449965
+                    ],
+                    [
+                      104.99618103424649,
+                      14.52202566393345
+                    ],
+                    [
+                      104.99595610407988,
+                      14.525706040000292
+                    ],
+                    [
+                      104.98718612397903,
+                      14.523415920175218
+                    ],
+                    [
+                      104.97247997524148,
+                      14.540569852099278
+                    ],
+                    [
+                      104.95400648293736,
+                      14.552731094199908
+                    ],
+                    [
+                      104.95654698796282,
+                      14.556845001168478
+                    ],
+                    [
+                      104.96891062610132,
+                      14.566085303927235
+                    ],
+                    [
+                      104.9875644273036,
+                      14.55863995111843
+                    ],
+                    [
+                      104.9918717679291,
+                      14.566778384428767
+                    ],
+                    [
+                      105.01746863745127,
+                      14.541232077965265
+                    ],
+                    [
+                      105.02970409140863,
+                      14.549615913329653
+                    ],
+                    [
+                      105.04732989148528,
+                      14.546908101941153
+                    ],
+                    [
+                      105.05321695933867,
+                      14.55922005995221
+                    ],
+                    [
+                      105.06724958268707,
+                      14.568768964223779
+                    ],
+                    [
+                      105.07412183281804,
+                      14.562361756551269
+                    ],
+                    [
+                      105.07398092397257,
+                      14.550838048352123
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "4",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e1a\u0e38\u0e40\u0e1b\u0e37\u0e2d\u0e22",
+              "amp_code": "3409",
+              "amp_en": "Nam Yuen",
+              "amp_th": "\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "area_sqkm": 70.99318898118,
+              "centroid_lat": 14.535903028726892,
+              "centroid_lon": 105.0506270865983,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#f47933",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                244,
+                121,
+                51
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e1a\u0e38\u0e40\u0e1b\u0e37\u0e2d\u0e22",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e2a\u0e34\u0e42\u0e23\u0e15\u0e21\u0e4c \u0e41\u0e2a\u0e19\u0e17\u0e27\u0e35\u0e2a\u0e38\u0e02",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e0a\u0e19",
+              "perimeter": 59.60652612745,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 3371,
+              "score_2nd": 132,
+              "tam_code": "340906",
+              "tam_en": "Bu Pueai",
+              "tam_th": "\u0e1a\u0e38\u0e40\u0e1b\u0e37\u0e2d\u0e22",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e1a\u0e38\u0e40\u0e1b\u0e37\u0e2d\u0e22",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e1a\u0e38\u0e40\u0e1b\u0e37\u0e2d\u0e22 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">3,371</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(90.7%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#f47933;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e2a\u0e34\u0e42\u0e23\u0e15\u0e21\u0e4c \u0e41\u0e2a\u0e19\u0e17\u0e27\u0e35\u0e2a\u0e38\u0e02</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e0a\u0e19 &nbsp;<b style=\"color:#fff\">132</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 3,239 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 3,715 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 3715
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.99618103424649,
+                      14.52202566393345
+                    ],
+                    [
+                      105.00254482759131,
+                      14.521887048449965
+                    ],
+                    [
+                      105.0006359888837,
+                      14.518802497645112
+                    ],
+                    [
+                      105.00709102175207,
+                      14.51905398310463
+                    ],
+                    [
+                      105.00590106338322,
+                      14.51569907463754
+                    ],
+                    [
+                      105.0105285888534,
+                      14.518218789607767
+                    ],
+                    [
+                      105.01526734473508,
+                      14.514660849205487
+                    ],
+                    [
+                      105.01396247682648,
+                      14.50710922668036
+                    ],
+                    [
+                      105.01824124292376,
+                      14.509291370507839
+                    ],
+                    [
+                      105.02380857368156,
+                      14.50492475138878
+                    ],
+                    [
+                      105.02110037544107,
+                      14.511527956064857
+                    ],
+                    [
+                      105.032857967416,
+                      14.52376868464899
+                    ],
+                    [
+                      105.0463471502752,
+                      14.512535455630509
+                    ],
+                    [
+                      105.06137612381531,
+                      14.519654491366841
+                    ],
+                    [
+                      105.07265272645736,
+                      14.512103447635639
+                    ],
+                    [
+                      105.0868622855393,
+                      14.512828225304718
+                    ],
+                    [
+                      105.09794079074804,
+                      14.503712749592017
+                    ],
+                    [
+                      105.09903045662169,
+                      14.494212044141216
+                    ],
+                    [
+                      105.0756041094768,
+                      14.478570499175122
+                    ],
+                    [
+                      105.05450643482591,
+                      14.44878794926074
+                    ],
+                    [
+                      105.03286063285825,
+                      14.448434171309117
+                    ],
+                    [
+                      105.02954929686547,
+                      14.442624668421708
+                    ],
+                    [
+                      105.01587256854715,
+                      14.438374118057215
+                    ],
+                    [
+                      105.00959772725112,
+                      14.419597485099619
+                    ],
+                    [
+                      105.01311100111832,
+                      14.399445852678987
+                    ],
+                    [
+                      105.0053187950166,
+                      14.387754978614872
+                    ],
+                    [
+                      105.00042082882167,
+                      14.36733607644252
+                    ],
+                    [
+                      104.99377622376231,
+                      14.379419578951167
+                    ],
+                    [
+                      104.9844880770799,
+                      14.384531404440404
+                    ],
+                    [
+                      104.98218876662743,
+                      14.402855195157787
+                    ],
+                    [
+                      104.9928306860749,
+                      14.433361656053908
+                    ],
+                    [
+                      105.00528254126951,
+                      14.448113167461523
+                    ],
+                    [
+                      105.00375759009242,
+                      14.455088496464931
+                    ],
+                    [
+                      104.99360604167329,
+                      14.45525798517753
+                    ],
+                    [
+                      104.99392798350995,
+                      14.462848692378195
+                    ],
+                    [
+                      104.9829447456341,
+                      14.477404876678953
+                    ],
+                    [
+                      104.9872227440915,
+                      14.483490916638338
+                    ],
+                    [
+                      104.98095774449264,
+                      14.494733509207045
+                    ],
+                    [
+                      104.98718612397903,
+                      14.523415920175218
+                    ],
+                    [
+                      104.99595610407988,
+                      14.525706040000292
+                    ],
+                    [
+                      104.99618103424649,
+                      14.52202566393345
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "5",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e2a\u0e35\u0e27\u0e34\u0e40\u0e0a\u0e35\u0e22\u0e23",
+              "amp_code": "3409",
+              "amp_en": "Nam Yuen",
+              "amp_th": "\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "area_sqkm": 95.00259805645,
+              "centroid_lat": 14.47103695996625,
+              "centroid_lon": 105.02667307941907,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#f47933",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                244,
+                121,
+                51
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e2a\u0e35\u0e27\u0e34\u0e40\u0e0a\u0e35\u0e22\u0e23",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e2a\u0e34\u0e42\u0e23\u0e15\u0e21\u0e4c \u0e41\u0e2a\u0e19\u0e17\u0e27\u0e35\u0e2a\u0e38\u0e02",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e0a\u0e19",
+              "perimeter": 59.47929172783,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 4204,
+              "score_2nd": 204,
+              "tam_code": "340907",
+              "tam_en": "Si Wichian",
+              "tam_th": "\u0e2a\u0e35\u0e27\u0e34\u0e40\u0e0a\u0e35\u0e22\u0e23",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e2a\u0e35\u0e27\u0e34\u0e40\u0e0a\u0e35\u0e22\u0e23",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e2a\u0e35\u0e27\u0e34\u0e40\u0e0a\u0e35\u0e22\u0e23 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">4,204</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(90.5%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#f47933;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e2a\u0e34\u0e42\u0e23\u0e15\u0e21\u0e4c \u0e41\u0e2a\u0e19\u0e17\u0e27\u0e35\u0e2a\u0e38\u0e02</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e0a\u0e19 &nbsp;<b style=\"color:#fff\">204</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 4,000 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 4,643 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 4643
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      105.16821358609265,
+                      14.597782578018624
+                    ],
+                    [
+                      105.17388869867686,
+                      14.595016538776074
+                    ],
+                    [
+                      105.16481064130785,
+                      14.589142543244522
+                    ],
+                    [
+                      105.16146103967907,
+                      14.577641446027304
+                    ],
+                    [
+                      105.15181358571412,
+                      14.572385460790079
+                    ],
+                    [
+                      105.15681260535483,
+                      14.56276173048166
+                    ],
+                    [
+                      105.14595221276574,
+                      14.546351952674113
+                    ],
+                    [
+                      105.14601526375947,
+                      14.53839228115059
+                    ],
+                    [
+                      105.14955835610525,
+                      14.537154242339541
+                    ],
+                    [
+                      105.15078457888353,
+                      14.534544627994928
+                    ],
+                    [
+                      105.13901724794968,
+                      14.535809033884034
+                    ],
+                    [
+                      105.12528275022323,
+                      14.546058880863619
+                    ],
+                    [
+                      105.09638819515372,
+                      14.5414604076011
+                    ],
+                    [
+                      105.08424349017658,
+                      14.55094283802246
+                    ],
+                    [
+                      105.07398092397257,
+                      14.550838048352123
+                    ],
+                    [
+                      105.07412183281804,
+                      14.562361756551269
+                    ],
+                    [
+                      105.06724958268707,
+                      14.568768964223779
+                    ],
+                    [
+                      105.07533930034269,
+                      14.599147844876416
+                    ],
+                    [
+                      105.09683471549457,
+                      14.60785185802576
+                    ],
+                    [
+                      105.09895632080726,
+                      14.603265274798666
+                    ],
+                    [
+                      105.1103059560042,
+                      14.605058938641784
+                    ],
+                    [
+                      105.11999850095201,
+                      14.611263316304317
+                    ],
+                    [
+                      105.1250214182216,
+                      14.603222159206851
+                    ],
+                    [
+                      105.14609769330268,
+                      14.601881039501725
+                    ],
+                    [
+                      105.16709707730072,
+                      14.619488233929268
+                    ],
+                    [
+                      105.16821358609265,
+                      14.597782578018624
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "6",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e22\u0e32\u0e07\u0e43\u0e2b\u0e0d\u0e48",
+              "amp_code": "3409",
+              "amp_en": "Nam Yuen",
+              "amp_th": "\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "area_sqkm": 64.04483744879,
+              "centroid_lat": 14.576244944823438,
+              "centroid_lon": 105.11822968032057,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e22\u0e32\u0e07\u0e43\u0e2b\u0e0d\u0e48",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 38.44305547077,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 2281,
+              "score_2nd": 122,
+              "tam_code": "340909",
+              "tam_en": "Yang Yai",
+              "tam_th": "\u0e22\u0e32\u0e07\u0e43\u0e2b\u0e0d\u0e48",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e22\u0e32\u0e07\u0e43\u0e2b\u0e0d\u0e48",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e22\u0e32\u0e07\u0e43\u0e2b\u0e0d\u0e48 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">2,281</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(88.9%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">122</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 2,159 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 2,566 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 2566
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      105.0345319267233,
+                      14.599217212507734
+                    ],
+                    [
+                      105.04665587180884,
+                      14.60627792060626
+                    ],
+                    [
+                      105.05173955940778,
+                      14.601173494338315
+                    ],
+                    [
+                      105.07533930034269,
+                      14.599147844876416
+                    ],
+                    [
+                      105.06724958268707,
+                      14.568768964223779
+                    ],
+                    [
+                      105.05321695933867,
+                      14.55922005995221
+                    ],
+                    [
+                      105.04732989148528,
+                      14.546908101941153
+                    ],
+                    [
+                      105.02970409140863,
+                      14.549615913329653
+                    ],
+                    [
+                      105.01746863745127,
+                      14.541232077965265
+                    ],
+                    [
+                      104.9918717679291,
+                      14.566778384428767
+                    ],
+                    [
+                      104.9875644273036,
+                      14.55863995111843
+                    ],
+                    [
+                      104.96891062610132,
+                      14.566085303927235
+                    ],
+                    [
+                      104.95654698796282,
+                      14.556845001168478
+                    ],
+                    [
+                      104.95014005343899,
+                      14.567026447908566
+                    ],
+                    [
+                      104.95780826004759,
+                      14.568640408294705
+                    ],
+                    [
+                      104.97212504590507,
+                      14.597363731177328
+                    ],
+                    [
+                      104.9768883219445,
+                      14.590410483255276
+                    ],
+                    [
+                      104.98469939663184,
+                      14.587681220929177
+                    ],
+                    [
+                      104.99000720379208,
+                      14.591582627060081
+                    ],
+                    [
+                      104.99572690950103,
+                      14.584875688093424
+                    ],
+                    [
+                      105.00240388442045,
+                      14.603654589714436
+                    ],
+                    [
+                      105.01710482572615,
+                      14.59946741952832
+                    ],
+                    [
+                      105.02017179603511,
+                      14.594197462530188
+                    ],
+                    [
+                      105.01999096239666,
+                      14.6061050692416
+                    ],
+                    [
+                      105.0247468397409,
+                      14.610063448650616
+                    ],
+                    [
+                      105.02893519694011,
+                      14.610243888492674
+                    ],
+                    [
+                      105.02767788030579,
+                      14.605700065410355
+                    ],
+                    [
+                      105.0345319267233,
+                      14.599217212507734
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "7",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e40\u0e01\u0e48\u0e32\u0e02\u0e32\u0e21",
+              "amp_code": "3409",
+              "amp_en": "Nam Yuen",
+              "amp_th": "\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19",
+              "area_sqkm": 55.35912241245,
+              "centroid_lat": 14.576681927266268,
+              "centroid_lon": 105.02018155059748,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e40\u0e01\u0e48\u0e32\u0e02\u0e32\u0e21",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 41.74411215586,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 3077,
+              "score_2nd": 94,
+              "tam_code": "340911",
+              "tam_en": "Kao Kham",
+              "tam_th": "\u0e40\u0e01\u0e48\u0e32\u0e02\u0e32\u0e21",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e40\u0e01\u0e48\u0e32\u0e02\u0e32\u0e21",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e40\u0e01\u0e48\u0e32\u0e02\u0e32\u0e21 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e22\u0e37\u0e19</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">3,077</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(91.7%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">94</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 2,983 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 3,356 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 3356
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.76936136312577,
+                      14.995841029740731
+                    ],
+                    [
+                      104.78097024285393,
+                      14.995104689491633
+                    ],
+                    [
+                      104.7847676258071,
+                      14.983621542799252
+                    ],
+                    [
+                      104.78258919491384,
+                      14.973860104071763
+                    ],
+                    [
+                      104.78398788701816,
+                      14.897076296101625
+                    ],
+                    [
+                      104.77804503786692,
+                      14.89878729730898
+                    ],
+                    [
+                      104.77045828428723,
+                      14.91211317520278
+                    ],
+                    [
+                      104.76201416600166,
+                      14.914252851205031
+                    ],
+                    [
+                      104.76240527310902,
+                      14.921096446162325
+                    ],
+                    [
+                      104.75345334067802,
+                      14.92213483064475
+                    ],
+                    [
+                      104.7355435399292,
+                      14.934057620094979
+                    ],
+                    [
+                      104.73632802786061,
+                      14.939093511455031
+                    ],
+                    [
+                      104.73449235956772,
+                      14.952121477524747
+                    ],
+                    [
+                      104.74207228840291,
+                      14.956598937524436
+                    ],
+                    [
+                      104.76186154547392,
+                      14.99972094855435
+                    ],
+                    [
+                      104.76753463476204,
+                      15.001261257995493
+                    ],
+                    [
+                      104.76936136312577,
+                      14.995841029740731
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "8",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e2b\u0e19\u0e2d\u0e07\u0e44\u0e2e",
+              "amp_code": "3422",
+              "amp_en": "Samrong",
+              "amp_th": "\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "area_sqkm": 37.48788257,
+              "centroid_lat": 14.95135213675557,
+              "centroid_lon": 104.76471571787049,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#212b6b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                33,
+                43,
+                107
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e2b\u0e19\u0e2d\u0e07\u0e44\u0e2e",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e40\u0e01\u0e29\u0e21 \u0e09\u0e34\u0e21\u0e1e\u0e25\u0e35",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22",
+              "perimeter": 29.00496164537,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 2009,
+              "score_2nd": 317,
+              "tam_code": "342203",
+              "tam_en": "Nong Hai",
+              "tam_th": "\u0e2b\u0e19\u0e2d\u0e07\u0e44\u0e2e",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e2b\u0e19\u0e2d\u0e07\u0e44\u0e2e",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e2b\u0e19\u0e2d\u0e07\u0e44\u0e2e &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">2,009</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(70.4%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#212b6b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e40\u0e01\u0e29\u0e21 \u0e09\u0e34\u0e21\u0e1e\u0e25\u0e35</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">317</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 1,692 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 2,852 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 2852
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.83793049227972,
+                      14.882005355563933
+                    ],
+                    [
+                      104.81020952876975,
+                      14.869442209424763
+                    ],
+                    [
+                      104.80546107242624,
+                      14.89685217636474
+                    ],
+                    [
+                      104.78398788701816,
+                      14.897076296101625
+                    ],
+                    [
+                      104.78258919491384,
+                      14.973860104071763
+                    ],
+                    [
+                      104.790676634049,
+                      14.973883780326934
+                    ],
+                    [
+                      104.82218174780088,
+                      14.95205708265511
+                    ],
+                    [
+                      104.83669471192856,
+                      14.948786168753891
+                    ],
+                    [
+                      104.84009884488295,
+                      14.944809594979647
+                    ],
+                    [
+                      104.8388563647847,
+                      14.92518350935753
+                    ],
+                    [
+                      104.84720428794577,
+                      14.904776371769332
+                    ],
+                    [
+                      104.83793049227972,
+                      14.882005355563933
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "9",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e04\u0e49\u0e2d\u0e19\u0e49\u0e2d\u0e22",
+              "amp_code": "3422",
+              "amp_en": "Samrong",
+              "amp_th": "\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "area_sqkm": 52.18738776572,
+              "centroid_lat": 14.922066377884919,
+              "centroid_lon": 104.81212065100479,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e04\u0e49\u0e2d\u0e19\u0e49\u0e2d\u0e22",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 31.69692204085,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 2500,
+              "score_2nd": 353,
+              "tam_code": "342204",
+              "tam_en": "Kho Noi",
+              "tam_th": "\u0e04\u0e49\u0e2d\u0e19\u0e49\u0e2d\u0e22",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e04\u0e49\u0e2d\u0e19\u0e49\u0e2d\u0e22",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e04\u0e49\u0e2d\u0e19\u0e49\u0e2d\u0e22 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">2,500</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(75.6%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">353</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 2,147 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 3,309 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 3309
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.72966757880491,
+                      15.053426464504124
+                    ],
+                    [
+                      104.74452898328215,
+                      15.03405271908008
+                    ],
+                    [
+                      104.76083020962379,
+                      15.02964548170093
+                    ],
+                    [
+                      104.7706717261782,
+                      15.02211073041253
+                    ],
+                    [
+                      104.76009708478594,
+                      15.004364356151614
+                    ],
+                    [
+                      104.74998514996126,
+                      15.005096756678162
+                    ],
+                    [
+                      104.74058632624038,
+                      14.999524092588096
+                    ],
+                    [
+                      104.72821064411013,
+                      14.984370309456418
+                    ],
+                    [
+                      104.68376461137082,
+                      14.985911843884434
+                    ],
+                    [
+                      104.6846599328972,
+                      15.004760949434987
+                    ],
+                    [
+                      104.67204989289142,
+                      15.022052135055153
+                    ],
+                    [
+                      104.67419599625093,
+                      15.029893754763279
+                    ],
+                    [
+                      104.66982134227912,
+                      15.032383344475857
+                    ],
+                    [
+                      104.67529931070472,
+                      15.034384322747615
+                    ],
+                    [
+                      104.6735431341325,
+                      15.039988576177441
+                    ],
+                    [
+                      104.6811850351536,
+                      15.035778487025983
+                    ],
+                    [
+                      104.6863547575266,
+                      15.042862011572588
+                    ],
+                    [
+                      104.68007424280063,
+                      15.047624464243995
+                    ],
+                    [
+                      104.68934371456379,
+                      15.059575357925443
+                    ],
+                    [
+                      104.68653746540797,
+                      15.07382482972735
+                    ],
+                    [
+                      104.72966757880491,
+                      15.053426464504124
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "10",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e19\u0e19\u0e01\u0e32\u0e40\u0e25\u0e47\u0e19",
+              "amp_code": "3422",
+              "amp_en": "Samrong",
+              "amp_th": "\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "area_sqkm": 60.69443385944,
+              "centroid_lat": 15.022897109661644,
+              "centroid_lon": 104.7144809886172,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e42\u0e19\u0e19\u0e01\u0e32\u0e40\u0e25\u0e47\u0e19",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 35.64292782338,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 1330,
+              "score_2nd": 995,
+              "tam_code": "342205",
+              "tam_en": "Non Kalen",
+              "tam_th": "\u0e42\u0e19\u0e19\u0e01\u0e32\u0e40\u0e25\u0e47\u0e19",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e19\u0e19\u0e01\u0e32\u0e40\u0e25\u0e47\u0e19",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e42\u0e19\u0e19\u0e01\u0e32\u0e40\u0e25\u0e47\u0e19 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">1,330</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(47.9%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">995</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 335 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 2,777 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 2777
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.91734941350508,
+                      14.948523230486717
+                    ],
+                    [
+                      104.90290537213897,
+                      14.93913265266014
+                    ],
+                    [
+                      104.88578086426537,
+                      14.913945703843646
+                    ],
+                    [
+                      104.8575855691946,
+                      14.8879804021599
+                    ],
+                    [
+                      104.8438948737766,
+                      14.864699509852098
+                    ],
+                    [
+                      104.83929480262614,
+                      14.847027708934926
+                    ],
+                    [
+                      104.8254687179334,
+                      14.83782673464358
+                    ],
+                    [
+                      104.81020952876975,
+                      14.869442209424763
+                    ],
+                    [
+                      104.83793049227972,
+                      14.882005355563933
+                    ],
+                    [
+                      104.84720428794577,
+                      14.904776371769332
+                    ],
+                    [
+                      104.8388563647847,
+                      14.92518350935753
+                    ],
+                    [
+                      104.84009884488295,
+                      14.944809594979647
+                    ],
+                    [
+                      104.83669471192856,
+                      14.948786168753891
+                    ],
+                    [
+                      104.8539824551611,
+                      14.990449598690546
+                    ],
+                    [
+                      104.85824610831189,
+                      14.98709624056361
+                    ],
+                    [
+                      104.86351003701961,
+                      14.979014513968115
+                    ],
+                    [
+                      104.91734941350508,
+                      14.948523230486717
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "11",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e04\u0e01\u0e2a\u0e27\u0e48\u0e32\u0e07",
+              "amp_code": "3422",
+              "amp_en": "Samrong",
+              "amp_th": "\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "area_sqkm": 64.20281089168,
+              "centroid_lat": 14.923080552189397,
+              "centroid_lon": 104.86032368338603,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e42\u0e04\u0e01\u0e2a\u0e27\u0e48\u0e32\u0e07",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 44.54141677188,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 2245,
+              "score_2nd": 420,
+              "tam_code": "342206",
+              "tam_en": "Khok Sawang",
+              "tam_th": "\u0e42\u0e04\u0e01\u0e2a\u0e27\u0e48\u0e32\u0e07",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e04\u0e01\u0e2a\u0e27\u0e48\u0e32\u0e07",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e42\u0e04\u0e01\u0e2a\u0e27\u0e48\u0e32\u0e07 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">2,245</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(72.0%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">420</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 1,825 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 3,119 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 3119
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.80402373064912,
+                      15.030547020169987
+                    ],
+                    [
+                      104.7959630731158,
+                      15.027781925769581
+                    ],
+                    [
+                      104.78306113418827,
+                      15.029046555932974
+                    ],
+                    [
+                      104.77842127658961,
+                      15.021122338966645
+                    ],
+                    [
+                      104.78053390260202,
+                      15.017771792926494
+                    ],
+                    [
+                      104.77169322529025,
+                      15.013963289735567
+                    ],
+                    [
+                      104.76753463476204,
+                      15.001261257995493
+                    ],
+                    [
+                      104.76186154547392,
+                      14.99972094855435
+                    ],
+                    [
+                      104.74207228840291,
+                      14.956598937524436
+                    ],
+                    [
+                      104.73449235956772,
+                      14.952121477524747
+                    ],
+                    [
+                      104.73632802786061,
+                      14.939093511455031
+                    ],
+                    [
+                      104.7255404682867,
+                      14.9299398187661
+                    ],
+                    [
+                      104.69994555818383,
+                      14.935229778087045
+                    ],
+                    [
+                      104.68446901564319,
+                      14.951046632930401
+                    ],
+                    [
+                      104.68485195093075,
+                      14.95866219332771
+                    ],
+                    [
+                      104.68848549507437,
+                      14.967900194605306
+                    ],
+                    [
+                      104.68288032835389,
+                      14.977124987477186
+                    ],
+                    [
+                      104.68376461137082,
+                      14.985911843884434
+                    ],
+                    [
+                      104.72821064411013,
+                      14.984370309456418
+                    ],
+                    [
+                      104.74058632624038,
+                      14.999524092588096
+                    ],
+                    [
+                      104.74998514996126,
+                      15.005096756678162
+                    ],
+                    [
+                      104.76009708478594,
+                      15.004364356151614
+                    ],
+                    [
+                      104.7706717261782,
+                      15.02211073041253
+                    ],
+                    [
+                      104.78676191375347,
+                      15.049782878584633
+                    ],
+                    [
+                      104.80603525685223,
+                      15.035902733153137
+                    ],
+                    [
+                      104.80402373064912,
+                      15.030547020169987
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "12",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e19\u0e19\u0e01\u0e25\u0e32\u0e07",
+              "amp_code": "3422",
+              "amp_en": "Samrong",
+              "amp_th": "\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "area_sqkm": 46.56224283715,
+              "centroid_lat": 14.976025739067747,
+              "centroid_lon": 104.72979847515364,
+              "color_hex_1st": "#e0002b",
+              "color_hex_2nd": "#ff66cc",
+              "color_rgb_1st": [
+                224,
+                0,
+                43
+              ],
+              "color_rgb_2nd": [
+                255,
+                102,
+                204
+              ],
+              "fill_color": [
+                224,
+                0,
+                43,
+                185
+              ],
+              "label": "\u0e42\u0e19\u0e19\u0e01\u0e25\u0e32\u0e07",
+              "line_color": [
+                255,
+                70,
+                113,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "perimeter": 43.60630113452,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 660,
+              "score_2nd": 552,
+              "tam_code": "342207",
+              "tam_en": "Non Klang",
+              "tam_th": "\u0e42\u0e19\u0e19\u0e01\u0e25\u0e32\u0e07",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e19\u0e19\u0e01\u0e25\u0e32\u0e07",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e42\u0e19\u0e19\u0e01\u0e25\u0e32\u0e07 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">660</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(43.2%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">552</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 108 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 1,528 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 1528
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.83669471192856,
+                      14.948786168753891
+                    ],
+                    [
+                      104.82218174780088,
+                      14.95205708265511
+                    ],
+                    [
+                      104.790676634049,
+                      14.973883780326934
+                    ],
+                    [
+                      104.78258919491384,
+                      14.973860104071763
+                    ],
+                    [
+                      104.7847676258071,
+                      14.983621542799252
+                    ],
+                    [
+                      104.80471181095514,
+                      14.997408497332243
+                    ],
+                    [
+                      104.8173238033206,
+                      15.017323690296852
+                    ],
+                    [
+                      104.84216234392208,
+                      14.994880635588068
+                    ],
+                    [
+                      104.8539824551611,
+                      14.990449598690546
+                    ],
+                    [
+                      104.83669471192856,
+                      14.948786168753891
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "13",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e02\u0e32\u0e21\u0e1b\u0e49\u0e2d\u0e21",
+              "amp_code": "3422",
+              "amp_en": "Samrong",
+              "amp_th": "\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07",
+              "area_sqkm": 30.28879038769,
+              "centroid_lat": 14.980888020268825,
+              "centroid_lon": 104.82087646488998,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#f47933",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                244,
+                121,
+                51
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e02\u0e32\u0e21\u0e1b\u0e49\u0e2d\u0e21",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e2a\u0e34\u0e42\u0e23\u0e15\u0e21\u0e4c \u0e41\u0e2a\u0e19\u0e17\u0e27\u0e35\u0e2a\u0e38\u0e02",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e0a\u0e19",
+              "perimeter": 22.93981608812,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 1037,
+              "score_2nd": 155,
+              "tam_code": "342209",
+              "tam_en": "Kham Pom",
+              "tam_th": "\u0e02\u0e32\u0e21\u0e1b\u0e49\u0e2d\u0e21",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e02\u0e32\u0e21\u0e1b\u0e49\u0e2d\u0e21",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e02\u0e32\u0e21\u0e1b\u0e49\u0e2d\u0e21 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e2a\u0e33\u0e42\u0e23\u0e07</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">1,037</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(76.2%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#f47933;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e2a\u0e34\u0e42\u0e23\u0e15\u0e21\u0e4c \u0e41\u0e2a\u0e19\u0e17\u0e27\u0e35\u0e2a\u0e38\u0e02</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e0a\u0e19 &nbsp;<b style=\"color:#fff\">155</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 882 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 1,360 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 1360
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.92661093942839,
+                      14.826146053990751
+                    ],
+                    [
+                      104.9618815686824,
+                      14.828736927427814
+                    ],
+                    [
+                      104.95516264121719,
+                      14.819477476527721
+                    ],
+                    [
+                      104.95703018082618,
+                      14.786911086490703
+                    ],
+                    [
+                      104.88450509467492,
+                      14.775533515880761
+                    ],
+                    [
+                      104.89380751109881,
+                      14.790015379443641
+                    ],
+                    [
+                      104.88590426722125,
+                      14.79713527404894
+                    ],
+                    [
+                      104.89710877253482,
+                      14.826248398765522
+                    ],
+                    [
+                      104.90816317167359,
+                      14.83289007860028
+                    ],
+                    [
+                      104.91065023150016,
+                      14.829012496060992
+                    ],
+                    [
+                      104.92661093942839,
+                      14.826146053990751
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "14",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e2b\u0e19\u0e2d\u0e07\u0e2d\u0e49\u0e21",
+              "amp_code": "3426",
+              "amp_en": "Thung Si Udom",
+              "amp_th": "\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "area_sqkm": 36.20065830263,
+              "centroid_lat": 14.804210245898306,
+              "centroid_lon": 104.92222444478656,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e2b\u0e19\u0e2d\u0e07\u0e2d\u0e49\u0e21",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 26.71902195794,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 1919,
+              "score_2nd": 265,
+              "tam_code": "342602",
+              "tam_en": "Nong Om",
+              "tam_th": "\u0e2b\u0e19\u0e2d\u0e07\u0e2d\u0e49\u0e21",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e2b\u0e19\u0e2d\u0e07\u0e2d\u0e49\u0e21",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e2b\u0e19\u0e2d\u0e07\u0e2d\u0e49\u0e21 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">1,919</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(76.8%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">265</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 1,654 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 2,499 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 2499
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      105.01312900434552,
+                      14.788214159404513
+                    ],
+                    [
+                      105.00360244366226,
+                      14.779956659393644
+                    ],
+                    [
+                      104.99927896485785,
+                      14.751183375032628
+                    ],
+                    [
+                      104.99339796517704,
+                      14.733029660696905
+                    ],
+                    [
+                      104.98722867451804,
+                      14.72902256279589
+                    ],
+                    [
+                      104.98630790013723,
+                      14.717470182713726
+                    ],
+                    [
+                      104.96959109051316,
+                      14.711665920963265
+                    ],
+                    [
+                      104.97085495740329,
+                      14.704110513137588
+                    ],
+                    [
+                      104.92939814772058,
+                      14.696675004862536
+                    ],
+                    [
+                      104.90404019336147,
+                      14.721515602385676
+                    ],
+                    [
+                      104.91935187975386,
+                      14.736176952308986
+                    ],
+                    [
+                      104.92202052597833,
+                      14.74618304040199
+                    ],
+                    [
+                      104.94673322562753,
+                      14.75184821164137
+                    ],
+                    [
+                      104.95431572849547,
+                      14.772580057696285
+                    ],
+                    [
+                      104.9632784625622,
+                      14.778163309643675
+                    ],
+                    [
+                      104.97536738501206,
+                      14.77759201484003
+                    ],
+                    [
+                      104.99617104938389,
+                      14.789409604879824
+                    ],
+                    [
+                      105.01312900434552,
+                      14.788214159404513
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "15",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e19\u0e32\u0e40\u0e01\u0e29\u0e21",
+              "amp_code": "3426",
+              "amp_en": "Thung Si Udom",
+              "amp_th": "\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "area_sqkm": 60.39797715218,
+              "centroid_lat": 14.739401249230966,
+              "centroid_lon": 104.95997456025061,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#212b6b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                33,
+                43,
+                107
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e19\u0e32\u0e40\u0e01\u0e29\u0e21",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e40\u0e01\u0e29\u0e21 \u0e09\u0e34\u0e21\u0e1e\u0e25\u0e35",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22",
+              "perimeter": 35.44899740972,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 1957,
+              "score_2nd": 348,
+              "tam_code": "342603",
+              "tam_en": "Na Kasem",
+              "tam_th": "\u0e19\u0e32\u0e40\u0e01\u0e29\u0e21",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e19\u0e32\u0e40\u0e01\u0e29\u0e21",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e19\u0e32\u0e40\u0e01\u0e29\u0e21 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">1,957</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(75.4%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#212b6b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e40\u0e01\u0e29\u0e21 \u0e09\u0e34\u0e21\u0e1e\u0e25\u0e35</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">348</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 1,609 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 2,594 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 2594
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.90404019336147,
+                      14.721515602385676
+                    ],
+                    [
+                      104.92939814772058,
+                      14.696675004862536
+                    ],
+                    [
+                      104.97085495740329,
+                      14.704110513137588
+                    ],
+                    [
+                      104.98561347312253,
+                      14.674298706483807
+                    ],
+                    [
+                      104.97156966018608,
+                      14.663701249129952
+                    ],
+                    [
+                      104.9578249561466,
+                      14.663743569424305
+                    ],
+                    [
+                      104.94804139596116,
+                      14.649342656799456
+                    ],
+                    [
+                      104.9240199000141,
+                      14.652944222138728
+                    ],
+                    [
+                      104.89234568547609,
+                      14.648770176677965
+                    ],
+                    [
+                      104.8895315262996,
+                      14.651075830030777
+                    ],
+                    [
+                      104.87675577049836,
+                      14.672597975001176
+                    ],
+                    [
+                      104.876894884829,
+                      14.698956073343803
+                    ],
+                    [
+                      104.86166502635737,
+                      14.708270786053907
+                    ],
+                    [
+                      104.86428140128929,
+                      14.714336776686325
+                    ],
+                    [
+                      104.8888658814759,
+                      14.712182434375414
+                    ],
+                    [
+                      104.90404019336147,
+                      14.721515602385676
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "16",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e01\u0e38\u0e14\u0e40\u0e23\u0e37\u0e2d",
+              "amp_code": "3426",
+              "amp_en": "Thung Si Udom",
+              "amp_th": "\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "area_sqkm": 63.87271162451,
+              "centroid_lat": 14.681791433951787,
+              "centroid_lon": 104.92203444058498,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#212b6b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                33,
+                43,
+                107
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e01\u0e38\u0e14\u0e40\u0e23\u0e37\u0e2d",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e40\u0e01\u0e29\u0e21 \u0e09\u0e34\u0e21\u0e1e\u0e25\u0e35",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22",
+              "perimeter": 36.76180004272,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 2389,
+              "score_2nd": 267,
+              "tam_code": "342604",
+              "tam_en": "Kut Ruea",
+              "tam_th": "\u0e01\u0e38\u0e14\u0e40\u0e23\u0e37\u0e2d",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e01\u0e38\u0e14\u0e40\u0e23\u0e37\u0e2d",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e01\u0e38\u0e14\u0e40\u0e23\u0e37\u0e2d &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">2,389</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(81.7%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#212b6b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e40\u0e01\u0e29\u0e21 \u0e09\u0e34\u0e21\u0e1e\u0e25\u0e35</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">267</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 2,122 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 2,924 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 2924
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.94673322562753,
+                      14.75184821164137
+                    ],
+                    [
+                      104.92202052597833,
+                      14.74618304040199
+                    ],
+                    [
+                      104.91935187975386,
+                      14.736176952308986
+                    ],
+                    [
+                      104.90404019336147,
+                      14.721515602385676
+                    ],
+                    [
+                      104.8888658814759,
+                      14.712182434375414
+                    ],
+                    [
+                      104.86428140128929,
+                      14.714336776686325
+                    ],
+                    [
+                      104.88450509467492,
+                      14.775533515880761
+                    ],
+                    [
+                      104.95703018082618,
+                      14.786911086490703
+                    ],
+                    [
+                      104.9519965269491,
+                      14.775617524344922
+                    ],
+                    [
+                      104.95431572849547,
+                      14.772580057696285
+                    ],
+                    [
+                      104.94673322562753,
+                      14.75184821164137
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "17",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e04\u0e01\u0e0a\u0e33\u0e41\u0e23\u0e30",
+              "amp_code": "3426",
+              "amp_en": "Thung Si Udom",
+              "amp_th": "\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "area_sqkm": 44.62765617048,
+              "centroid_lat": 14.75211720379369,
+              "centroid_lon": 104.90742598152552,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#f47933",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                244,
+                121,
+                51
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e42\u0e04\u0e01\u0e0a\u0e33\u0e41\u0e23\u0e30",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e2a\u0e34\u0e42\u0e23\u0e15\u0e21\u0e4c \u0e41\u0e2a\u0e19\u0e17\u0e27\u0e35\u0e2a\u0e38\u0e02",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e0a\u0e19",
+              "perimeter": 30.01914704421,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 2317,
+              "score_2nd": 139,
+              "tam_code": "342605",
+              "tam_en": "Khok Chamrae",
+              "tam_th": "\u0e42\u0e04\u0e01\u0e0a\u0e33\u0e41\u0e23\u0e30",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e04\u0e01\u0e0a\u0e33\u0e41\u0e23\u0e30",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e42\u0e04\u0e01\u0e0a\u0e33\u0e41\u0e23\u0e30 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">2,317</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(86.3%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#f47933;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e2a\u0e34\u0e42\u0e23\u0e15\u0e21\u0e4c \u0e41\u0e2a\u0e19\u0e17\u0e27\u0e35\u0e2a\u0e38\u0e02</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e0a\u0e19 &nbsp;<b style=\"color:#fff\">139</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 2,178 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 2,686 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 2686
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.87635264345698,
+                      14.8031823934617
+                    ],
+                    [
+                      104.88590426722125,
+                      14.79713527404894
+                    ],
+                    [
+                      104.89380751109881,
+                      14.790015379443641
+                    ],
+                    [
+                      104.88450509467492,
+                      14.775533515880761
+                    ],
+                    [
+                      104.86428140128929,
+                      14.714336776686325
+                    ],
+                    [
+                      104.86166502635737,
+                      14.708270786053907
+                    ],
+                    [
+                      104.84635470940015,
+                      14.722546106123165
+                    ],
+                    [
+                      104.84342201983776,
+                      14.735558297983301
+                    ],
+                    [
+                      104.83808740069061,
+                      14.739033644100546
+                    ],
+                    [
+                      104.8206972508959,
+                      14.752447624507361
+                    ],
+                    [
+                      104.81791397544593,
+                      14.776436053128117
+                    ],
+                    [
+                      104.84600160840014,
+                      14.783067235392823
+                    ],
+                    [
+                      104.85647235620877,
+                      14.804620521466466
+                    ],
+                    [
+                      104.87635264345698,
+                      14.8031823934617
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "18",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e19\u0e32\u0e2b\u0e48\u0e2d\u0e21",
+              "amp_code": "3426",
+              "amp_en": "Thung Si Udom",
+              "amp_th": "\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21",
+              "area_sqkm": 45.04657669303,
+              "centroid_lat": 14.763140767453853,
+              "centroid_lon": 104.85619807193713,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e19\u0e32\u0e2b\u0e48\u0e2d\u0e21",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 29.52093678964,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 1554,
+              "score_2nd": 192,
+              "tam_code": "342606",
+              "tam_en": "Na Hom",
+              "tam_th": "\u0e19\u0e32\u0e2b\u0e48\u0e2d\u0e21",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e19\u0e32\u0e2b\u0e48\u0e2d\u0e21",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e19\u0e32\u0e2b\u0e48\u0e2d\u0e21 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e17\u0e38\u0e48\u0e07\u0e28\u0e23\u0e35\u0e2d\u0e38\u0e14\u0e21</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">1,554</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(78.6%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">192</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 1,362 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 1,976 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 1976
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.97212504590507,
+                      14.597363731177328
+                    ],
+                    [
+                      104.95780826004759,
+                      14.568640408294705
+                    ],
+                    [
+                      104.95014005343899,
+                      14.567026447908566
+                    ],
+                    [
+                      104.95654698796282,
+                      14.556845001168478
+                    ],
+                    [
+                      104.95400648293736,
+                      14.552731094199908
+                    ],
+                    [
+                      104.95418425649034,
+                      14.534947336436943
+                    ],
+                    [
+                      104.95042026256124,
+                      14.53092183695283
+                    ],
+                    [
+                      104.91739806890831,
+                      14.528554723631611
+                    ],
+                    [
+                      104.91222122143108,
+                      14.521928417955436
+                    ],
+                    [
+                      104.91330329148865,
+                      14.513395577724197
+                    ],
+                    [
+                      104.90335513432315,
+                      14.512123757184751
+                    ],
+                    [
+                      104.89175399910643,
+                      14.516182630777154
+                    ],
+                    [
+                      104.87444897406947,
+                      14.534550251834512
+                    ],
+                    [
+                      104.86435700936255,
+                      14.5395491171478
+                    ],
+                    [
+                      104.86470466722032,
+                      14.54709588302666
+                    ],
+                    [
+                      104.87524215569485,
+                      14.557743159533715
+                    ],
+                    [
+                      104.88339085353891,
+                      14.576198683600527
+                    ],
+                    [
+                      104.87148865160425,
+                      14.583931779508294
+                    ],
+                    [
+                      104.8737020239894,
+                      14.602729561590165
+                    ],
+                    [
+                      104.88666593542152,
+                      14.604196095925413
+                    ],
+                    [
+                      104.9010992204515,
+                      14.599619642657213
+                    ],
+                    [
+                      104.92733787554788,
+                      14.602945848770464
+                    ],
+                    [
+                      104.9328568456343,
+                      14.607699458930332
+                    ],
+                    [
+                      104.94664365290632,
+                      14.601277495632582
+                    ],
+                    [
+                      104.95714474562898,
+                      14.60530111903895
+                    ],
+                    [
+                      104.96538495341095,
+                      14.623637008840513
+                    ],
+                    [
+                      104.98043406298703,
+                      14.634544009861491
+                    ],
+                    [
+                      104.9827877074307,
+                      14.622193899743829
+                    ],
+                    [
+                      104.97670107221273,
+                      14.617166408524845
+                    ],
+                    [
+                      104.97212504590507,
+                      14.597363731177328
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "19",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e15\u0e32\u0e40\u0e01\u0e32",
+              "amp_code": "3433",
+              "amp_en": "Nam Khun",
+              "amp_th": "\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19",
+              "area_sqkm": 85.21823961781,
+              "centroid_lat": 14.567569358018725,
+              "centroid_lon": 104.91901194615694,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e15\u0e32\u0e40\u0e01\u0e32",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 47.24178208598,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 1739,
+              "score_2nd": 58,
+              "tam_code": "343301",
+              "tam_en": "Ta Kao",
+              "tam_th": "\u0e15\u0e32\u0e40\u0e01\u0e32",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e15\u0e32\u0e40\u0e01\u0e32",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e15\u0e32\u0e40\u0e01\u0e32 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">1,739</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(92.2%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">58</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 1,681 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 1,887 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 1887
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.87553405071945,
+                      14.660283435122825
+                    ],
+                    [
+                      104.8895315262996,
+                      14.651075830030777
+                    ],
+                    [
+                      104.89234568547609,
+                      14.648770176677965
+                    ],
+                    [
+                      104.88403135382734,
+                      14.6505978685405
+                    ],
+                    [
+                      104.86995916706249,
+                      14.638674143072842
+                    ],
+                    [
+                      104.87730836496546,
+                      14.629266674905336
+                    ],
+                    [
+                      104.86758130817618,
+                      14.610232533885727
+                    ],
+                    [
+                      104.8737020239894,
+                      14.602729561590165
+                    ],
+                    [
+                      104.87148865160425,
+                      14.583931779508294
+                    ],
+                    [
+                      104.88339085353891,
+                      14.576198683600527
+                    ],
+                    [
+                      104.87524215569485,
+                      14.557743159533715
+                    ],
+                    [
+                      104.8309643723075,
+                      14.538608961802074
+                    ],
+                    [
+                      104.82799705601265,
+                      14.532849579374375
+                    ],
+                    [
+                      104.81633881038412,
+                      14.551545415932898
+                    ],
+                    [
+                      104.81923130008887,
+                      14.559283600432568
+                    ],
+                    [
+                      104.82794144655809,
+                      14.578107819574692
+                    ],
+                    [
+                      104.82638586769653,
+                      14.606616568937381
+                    ],
+                    [
+                      104.83830130795485,
+                      14.617012388598697
+                    ],
+                    [
+                      104.83761835865569,
+                      14.630215108496126
+                    ],
+                    [
+                      104.8367255143988,
+                      14.635760424428238
+                    ],
+                    [
+                      104.84703642962127,
+                      14.647473483536096
+                    ],
+                    [
+                      104.85070344807434,
+                      14.659602152619764
+                    ],
+                    [
+                      104.87553405071945,
+                      14.660283435122825
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "20",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e44\u0e1e\u0e1a\u0e39\u0e25\u0e22\u0e4c",
+              "amp_code": "3433",
+              "amp_en": "Nam Khun",
+              "amp_th": "\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19",
+              "area_sqkm": 59.62207761117,
+              "centroid_lat": 14.59626810407847,
+              "centroid_lon": 104.85173237932803,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e44\u0e1e\u0e1a\u0e39\u0e25\u0e22\u0e4c",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 40.01950483827,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 2626,
+              "score_2nd": 154,
+              "tam_code": "343302",
+              "tam_en": "Phaibun",
+              "tam_th": "\u0e44\u0e1e\u0e1a\u0e39\u0e25\u0e22\u0e4c",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e44\u0e1e\u0e1a\u0e39\u0e25\u0e22\u0e4c",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e44\u0e1e\u0e1a\u0e39\u0e25\u0e22\u0e4c &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">2,626</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(87.3%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">154</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 2,472 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 3,009 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 3009
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.99501578835032,
+                      14.66836183892047
+                    ],
+                    [
+                      104.97863663276681,
+                      14.648994468877564
+                    ],
+                    [
+                      104.98043406298703,
+                      14.634544009861491
+                    ],
+                    [
+                      104.96538495341095,
+                      14.623637008840513
+                    ],
+                    [
+                      104.95714474562898,
+                      14.60530111903895
+                    ],
+                    [
+                      104.94664365290632,
+                      14.601277495632582
+                    ],
+                    [
+                      104.9328568456343,
+                      14.607699458930332
+                    ],
+                    [
+                      104.92733787554788,
+                      14.602945848770464
+                    ],
+                    [
+                      104.9010992204515,
+                      14.599619642657213
+                    ],
+                    [
+                      104.88666593542152,
+                      14.604196095925413
+                    ],
+                    [
+                      104.8737020239894,
+                      14.602729561590165
+                    ],
+                    [
+                      104.86758130817618,
+                      14.610232533885727
+                    ],
+                    [
+                      104.87730836496546,
+                      14.629266674905336
+                    ],
+                    [
+                      104.86995916706249,
+                      14.638674143072842
+                    ],
+                    [
+                      104.88403135382734,
+                      14.6505978685405
+                    ],
+                    [
+                      104.89234568547609,
+                      14.648770176677965
+                    ],
+                    [
+                      104.9240199000141,
+                      14.652944222138728
+                    ],
+                    [
+                      104.94804139596116,
+                      14.649342656799456
+                    ],
+                    [
+                      104.9578249561466,
+                      14.663743569424305
+                    ],
+                    [
+                      104.97156966018608,
+                      14.663701249129952
+                    ],
+                    [
+                      104.98561347312253,
+                      14.674298706483807
+                    ],
+                    [
+                      104.99501578835032,
+                      14.66836183892047
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "21",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e02\u0e35\u0e49\u0e40\u0e2b\u0e25\u0e47\u0e01",
+              "amp_code": "3433",
+              "amp_en": "Nam Khun",
+              "amp_th": "\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19",
+              "area_sqkm": 61.71287624394,
+              "centroid_lat": 14.631044892250426,
+              "centroid_lon": 104.92742284545855,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#212b6b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                33,
+                43,
+                107
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e02\u0e35\u0e49\u0e40\u0e2b\u0e25\u0e47\u0e01",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e40\u0e01\u0e29\u0e21 \u0e09\u0e34\u0e21\u0e1e\u0e25\u0e35",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22",
+              "perimeter": 38.39268553538,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 3130,
+              "score_2nd": 347,
+              "tam_code": "343303",
+              "tam_en": "Khi Lek",
+              "tam_th": "\u0e02\u0e35\u0e49\u0e40\u0e2b\u0e25\u0e47\u0e01",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e02\u0e35\u0e49\u0e40\u0e2b\u0e25\u0e47\u0e01",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e02\u0e35\u0e49\u0e40\u0e2b\u0e25\u0e47\u0e01 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">3,130</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(83.8%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#212b6b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e40\u0e01\u0e29\u0e21 \u0e09\u0e34\u0e21\u0e1e\u0e25\u0e35</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e20\u0e39\u0e21\u0e34\u0e43\u0e08\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">347</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 2,783 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 3,734 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 3734
+            },
+            "type": "Feature"
+          },
+          {
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    [
+                      104.89175399910643,
+                      14.516182630777154
+                    ],
+                    [
+                      104.90335513432315,
+                      14.512123757184751
+                    ],
+                    [
+                      104.90365191037962,
+                      14.502873839230704
+                    ],
+                    [
+                      104.91760450399644,
+                      14.497665218389844
+                    ],
+                    [
+                      104.90548940645087,
+                      14.473198028596487
+                    ],
+                    [
+                      104.90485205637027,
+                      14.45887012613911
+                    ],
+                    [
+                      104.89860934843098,
+                      14.463117405657824
+                    ],
+                    [
+                      104.88628073612995,
+                      14.443137262412874
+                    ],
+                    [
+                      104.8866035813393,
+                      14.438309842948152
+                    ],
+                    [
+                      104.89899838727963,
+                      14.431738722658036
+                    ],
+                    [
+                      104.89514963178857,
+                      14.42582356826655
+                    ],
+                    [
+                      104.88829861895861,
+                      14.424539519791264
+                    ],
+                    [
+                      104.87612535231227,
+                      14.436903765845653
+                    ],
+                    [
+                      104.85283382055299,
+                      14.424988288799765
+                    ],
+                    [
+                      104.84011596679291,
+                      14.425991844734332
+                    ],
+                    [
+                      104.82877271534369,
+                      14.440705567978391
+                    ],
+                    [
+                      104.85948816651131,
+                      14.473125958626875
+                    ],
+                    [
+                      104.86254493642168,
+                      14.497503744033086
+                    ],
+                    [
+                      104.84850156993056,
+                      14.51120008473124
+                    ],
+                    [
+                      104.82799705601265,
+                      14.532849579374375
+                    ],
+                    [
+                      104.8309643723075,
+                      14.538608961802074
+                    ],
+                    [
+                      104.87524215569485,
+                      14.557743159533715
+                    ],
+                    [
+                      104.86470466722032,
+                      14.54709588302666
+                    ],
+                    [
+                      104.86435700936255,
+                      14.5395491171478
+                    ],
+                    [
+                      104.87444897406947,
+                      14.534550251834512
+                    ],
+                    [
+                      104.89175399910643,
+                      14.516182630777154
+                    ]
+                  ]
+                ]
+              ],
+              "type": "MultiPolygon"
+            },
+            "id": "22",
+            "properties": {
+              "_amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19",
+              "_tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e04\u0e01\u0e2a\u0e30\u0e2d\u0e32\u0e14",
+              "amp_code": "3433",
+              "amp_en": "Nam Khun",
+              "amp_th": "\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19",
+              "amphoe": "\u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19",
+              "area_sqkm": 70.50386229702,
+              "centroid_lat": 14.484681121563268,
+              "centroid_lon": 104.8710011728516,
+              "color_hex_1st": "#ff66cc",
+              "color_hex_2nd": "#e0002b",
+              "color_rgb_1st": [
+                255,
+                102,
+                204
+              ],
+              "color_rgb_2nd": [
+                224,
+                0,
+                43
+              ],
+              "fill_color": [
+                255,
+                102,
+                204,
+                185
+              ],
+              "label": "\u0e42\u0e04\u0e01\u0e2a\u0e30\u0e2d\u0e32\u0e14",
+              "line_color": [
+                255,
+                172,
+                255,
+                255
+              ],
+              "name_1st": "\u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21",
+              "name_2nd": "\u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07",
+              "party_1st": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07",
+              "party_2nd": "\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22",
+              "perimeter": 49.06963915598,
+              "pro_code": "34",
+              "pro_en": "Ubon Ratchathani",
+              "pro_th": "\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
+              "reg_nesdb": "Northeast",
+              "reg_royin": "Northeast",
+              "score_1st": 2676,
+              "score_2nd": 85,
+              "tam_code": "343304",
+              "tam_en": "Khok Sa-At",
+              "tam_th": "\u0e42\u0e04\u0e01\u0e2a\u0e30\u0e2d\u0e32\u0e14",
+              "tambon": "\u0e15\u0e33\u0e1a\u0e25\u0e42\u0e04\u0e01\u0e2a\u0e30\u0e2d\u0e32\u0e14",
+              "tooltip_html": "<div style=\"font-family:Sarabun,sans-serif;font-size:13px;line-height:1.7\"><div style=\"font-size:15px;font-weight:700;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:5px\">\ud83d\udccd \u0e15\u0e33\u0e1a\u0e25\u0e42\u0e04\u0e01\u0e2a\u0e30\u0e2d\u0e32\u0e14 &middot; \u0e2d\u0e33\u0e40\u0e20\u0e2d\u0e19\u0e49\u0e33\u0e02\u0e38\u0e48\u0e19</div><div style=\"display:flex;align-items:center;gap:6px;margin-bottom:2px\"><span style=\"background:#ff66cc;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd47 \u0e19\u0e32\u0e22\u0e2a\u0e21\u0e28\u0e31\u0e01\u0e14\u0e34\u0e4c \u0e1a\u0e38\u0e0d\u0e1b\u0e23\u0e30\u0e0a\u0e21</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e23\u0e27\u0e21\u0e1e\u0e25\u0e31\u0e07 &nbsp;<b style=\"color:#fff\">2,676</b> \u0e04\u0e30\u0e41\u0e19\u0e19 <span style=\"color:#888\">(91.5%)</span></div><div style=\"display:flex;align-items:center;gap:6px;margin:5px 0 2px\"><span style=\"background:#e0002b;width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0\"></span><b>\ud83e\udd48 \u0e19\u0e32\u0e22\u0e27\u0e31\u0e0a\u0e23\u0e1e\u0e25 \u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e04\u0e07</b></div><div style=\"padding-left:16px;color:#ccc\">\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e44\u0e17\u0e22 &nbsp;<b style=\"color:#fff\">85</b> \u0e04\u0e30\u0e41\u0e19\u0e19</div><div style=\"margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.12);color:#888;font-size:11px\">\u0e2b\u0e48\u0e32\u0e07 2,591 \u0e04\u0e30\u0e41\u0e19\u0e19 &nbsp;\u00b7&nbsp; \u0e23\u0e27\u0e21 2,926 \u0e04\u0e30\u0e41\u0e19\u0e19</div></div>",
+              "total_votes": 2926
+            },
+            "type": "Feature"
+          }
+        ],
+        "type": "FeatureCollection"
+      },
+      "extruded": false,
+      "getFillColor": "@@=properties.fill_color",
+      "getLineColor": "@@=properties.line_color",
+      "highlightColor": [
+        255,
+        255,
+        255,
+        55
+      ],
+      "id": "c8745d75-73ad-45d7-8d65-d91c97b10f24",
+      "lineWidthMaxPixels": 2,
+      "lineWidthMinPixels": 1,
+      "pickable": true
+    },
+    {
+      "@@type": "TextLayer",
+      "background": true,
+      "backgroundPadding": [
+        4,
+        2,
+        4,
+        2
+      ],
+      "data": [
+        {
+          "centroid_lat": 14.819211783913326,
+          "centroid_lon": 104.84588530736171,
+          "font_size": 12,
+          "label": "\u0e17\u0e38\u0e48\u0e07\u0e40\u0e17\u0e34\u0e07",
+          "total_votes": 3502
+        },
+        {
+          "centroid_lat": 14.460218789992286,
+          "centroid_lon": 104.94697515933288,
+          "font_size": 13,
+          "label": "\u0e42\u0e0b\u0e07",
+          "total_votes": 3879
+        },
+        {
+          "centroid_lat": 14.628538308351215,
+          "centroid_lon": 105.03225511591806,
+          "font_size": 12,
+          "label": "\u0e22\u0e32\u0e07",
+          "total_votes": 3096
+        },
+        {
+          "centroid_lat": 14.362610542253837,
+          "centroid_lon": 105.11099656674864,
+          "font_size": 15,
+          "label": "\u0e42\u0e14\u0e21\u0e1b\u0e23\u0e30\u0e14\u0e34\u0e29\u0e10\u0e4c",
+          "total_votes": 7231
+        },
+        {
+          "centroid_lat": 14.535903028726892,
+          "centroid_lon": 105.0506270865983,
+          "font_size": 13,
+          "label": "\u0e1a\u0e38\u0e40\u0e1b\u0e37\u0e2d\u0e22",
+          "total_votes": 3715
+        },
+        {
+          "centroid_lat": 14.47103695996625,
+          "centroid_lon": 105.02667307941907,
+          "font_size": 13,
+          "label": "\u0e2a\u0e35\u0e27\u0e34\u0e40\u0e0a\u0e35\u0e22\u0e23",
+          "total_votes": 4643
+        },
+        {
+          "centroid_lat": 14.576244944823438,
+          "centroid_lon": 105.11822968032057,
+          "font_size": 12,
+          "label": "\u0e22\u0e32\u0e07\u0e43\u0e2b\u0e0d\u0e48",
+          "total_votes": 2566
+        },
+        {
+          "centroid_lat": 14.576681927266268,
+          "centroid_lon": 105.02018155059748,
+          "font_size": 12,
+          "label": "\u0e40\u0e01\u0e48\u0e32\u0e02\u0e32\u0e21",
+          "total_votes": 3356
+        },
+        {
+          "centroid_lat": 14.95135213675557,
+          "centroid_lon": 104.76471571787049,
+          "font_size": 12,
+          "label": "\u0e2b\u0e19\u0e2d\u0e07\u0e44\u0e2e",
+          "total_votes": 2852
+        },
+        {
+          "centroid_lat": 14.922066377884919,
+          "centroid_lon": 104.81212065100479,
+          "font_size": 12,
+          "label": "\u0e04\u0e49\u0e2d\u0e19\u0e49\u0e2d\u0e22",
+          "total_votes": 3309
+        },
+        {
+          "centroid_lat": 15.022897109661644,
+          "centroid_lon": 104.7144809886172,
+          "font_size": 12,
+          "label": "\u0e42\u0e19\u0e19\u0e01\u0e32\u0e40\u0e25\u0e47\u0e19",
+          "total_votes": 2777
+        },
+        {
+          "centroid_lat": 14.923080552189397,
+          "centroid_lon": 104.86032368338603,
+          "font_size": 12,
+          "label": "\u0e42\u0e04\u0e01\u0e2a\u0e27\u0e48\u0e32\u0e07",
+          "total_votes": 3119
+        },
+        {
+          "centroid_lat": 14.976025739067747,
+          "centroid_lon": 104.72979847515364,
+          "font_size": 11,
+          "label": "\u0e42\u0e19\u0e19\u0e01\u0e25\u0e32\u0e07",
+          "total_votes": 1528
+        },
+        {
+          "centroid_lat": 14.980888020268825,
+          "centroid_lon": 104.82087646488998,
+          "font_size": 11,
+          "label": "\u0e02\u0e32\u0e21\u0e1b\u0e49\u0e2d\u0e21",
+          "total_votes": 1360
+        },
+        {
+          "centroid_lat": 14.804210245898306,
+          "centroid_lon": 104.92222444478656,
+          "font_size": 12,
+          "label": "\u0e2b\u0e19\u0e2d\u0e07\u0e2d\u0e49\u0e21",
+          "total_votes": 2499
+        },
+        {
+          "centroid_lat": 14.739401249230966,
+          "centroid_lon": 104.95997456025061,
+          "font_size": 12,
+          "label": "\u0e19\u0e32\u0e40\u0e01\u0e29\u0e21",
+          "total_votes": 2594
+        },
+        {
+          "centroid_lat": 14.681791433951787,
+          "centroid_lon": 104.92203444058498,
+          "font_size": 12,
+          "label": "\u0e01\u0e38\u0e14\u0e40\u0e23\u0e37\u0e2d",
+          "total_votes": 2924
+        },
+        {
+          "centroid_lat": 14.75211720379369,
+          "centroid_lon": 104.90742598152552,
+          "font_size": 12,
+          "label": "\u0e42\u0e04\u0e01\u0e0a\u0e33\u0e41\u0e23\u0e30",
+          "total_votes": 2686
+        },
+        {
+          "centroid_lat": 14.763140767453853,
+          "centroid_lon": 104.85619807193713,
+          "font_size": 12,
+          "label": "\u0e19\u0e32\u0e2b\u0e48\u0e2d\u0e21",
+          "total_votes": 1976
+        },
+        {
+          "centroid_lat": 14.567569358018725,
+          "centroid_lon": 104.91901194615694,
+          "font_size": 12,
+          "label": "\u0e15\u0e32\u0e40\u0e01\u0e32",
+          "total_votes": 1887
+        },
+        {
+          "centroid_lat": 14.59626810407847,
+          "centroid_lon": 104.85173237932803,
+          "font_size": 12,
+          "label": "\u0e44\u0e1e\u0e1a\u0e39\u0e25\u0e22\u0e4c",
+          "total_votes": 3009
+        },
+        {
+          "centroid_lat": 14.631044892250426,
+          "centroid_lon": 104.92742284545855,
+          "font_size": 13,
+          "label": "\u0e02\u0e35\u0e49\u0e40\u0e2b\u0e25\u0e47\u0e01",
+          "total_votes": 3734
+        },
+        {
+          "centroid_lat": 14.484681121563268,
+          "centroid_lon": 104.8710011728516,
+          "font_size": 12,
+          "label": "\u0e42\u0e04\u0e01\u0e2a\u0e30\u0e2d\u0e32\u0e14",
+          "total_votes": 2926
+        }
+      ],
+      "fontFamily": "@@='Sarabun', 'Noto Sans Thai', sans-serif",
+      "fontWeight": 700,
+      "getAlignmentBaseline": "center",
+      "getBackgroundColor": [
+        0,
+        0,
+        0,
+        110
+      ],
+      "getColor": [
+        255,
+        255,
+        255,
+        240
+      ],
+      "getPosition": "@@=[centroid_lon, centroid_lat]",
+      "getSize": "@@=font_size",
+      "getText": "@@=label",
+      "getTextAnchor": "middle",
+      "id": "4980758a-849e-4b91-8d5f-dea507a42d27",
+      "pickable": false
+    }
+  ],
+  "mapProvider": "carto",
+  "mapStyle": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+  "views": [
+    {
+      "@@type": "MapView",
+      "controller": true
+    }
+  ]
+};
+    const tooltip = {'html': '{properties.tooltip_html}', 'style': {'backgroundColor': 'rgba(10,10,18,0.96)', 'color': 'white', 'borderRadius': '12px', 'padding': '14px 18px', 'maxWidth': '300px', 'boxShadow': '0 8px 32px rgba(0,0,0,0.7)', 'border': '1px solid rgba(255,255,255,0.12)'}};
+    const customLibraries = null;
+    const configuration = null;
+
+    const deckInstance = createDeck({
+                  container,
+      jsonInput,
+      tooltip,
+      customLibraries,
+      configuration,
+          });
+
+  </script>
+</html>
